@@ -10,7 +10,7 @@
 
   <groupId>org.springframework.samples</groupId>
   <artifactId>spring-petclinic</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>v4.0.0</version>
 
   <name>petclinic</name>
 
@@ -424,4 +424,14 @@
       </build>
     </profile>
   </profiles>
+  <distributionManagement>
+    <repository>
+      <id>maven-releases</id>
+      <url>http://localhost:8081/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven-snapshots</id>
+      <url>http://localhost:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
