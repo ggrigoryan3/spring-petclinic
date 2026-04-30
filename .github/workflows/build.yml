@@ -28,4 +28,4 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
       - name: Run tests
-        run: mvn test
+        run: mvn test -Dspring.docker.compose.skip.in-tests=true
