@@ -24,8 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     container: maven:3.8.5-openjdk-17
 
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+          
     steps:
       - name: Get code
         uses: actions/checkout@v4
       - name: Run tests
-        run: mvn test -Dspring.docker.compose.skip.in-tests=true
+        run: mvn test
