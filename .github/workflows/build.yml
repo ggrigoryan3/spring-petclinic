@@ -11,15 +11,13 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v4
-      - name: Run Checkstyle
-        run: mvn checkstyle:checkstyle
       - name: Genarate report
         run: mvn site
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
           name: checkstyle-report
-          path: "target/checkstyle.html"
+          path: "target/site/checkstyle.html"
     
   test:
     name: Tests
