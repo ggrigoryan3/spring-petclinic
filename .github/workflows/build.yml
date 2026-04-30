@@ -1,0 +1,20 @@
+name: Pipeline
+on:
+  push:
+
+jobs:
+  checkstyle:
+    name: Checkstyle
+    runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Run Checkstyle
+        run: mvn checkstyle:checkstyle
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: target/site/checkstyle.html
