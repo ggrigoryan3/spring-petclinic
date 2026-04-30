@@ -1,7 +1,7 @@
 name: Pipeline
 on:
   push:
-
+  # pull_request
 jobs:
   checkstyle:
     name: Checkstyle
@@ -18,3 +18,14 @@ jobs:
         with:
           name: checkstyle-report
           path: target/site/checkstyle.html
+    
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: mvn test
