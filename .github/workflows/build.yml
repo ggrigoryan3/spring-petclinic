@@ -49,6 +49,7 @@ jobs:
 
   docker-push:
     name: Push To DockerHub
+    needs: [test, build]
     runs-on: ubuntu-latest
 
     steps:
