@@ -1,7 +1,7 @@
 name: Pipeline
 on:
   push:
-  # pull_request
+  # pull_request #
 jobs:
   checkstyle:
     name: Checkstyle
