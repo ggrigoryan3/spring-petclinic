@@ -6,7 +6,6 @@ jobs:
   checkstyle:
     name: Checkstyle
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get code
@@ -22,10 +21,9 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get code
         uses: actions/checkout@v4
       - name: Run tests
-        run: mvn test -Dtest="!MySqlIntegrationTests.java, !MysqlTestApplication.java, !PetClinicIntegrationTests.java, !PostgresIntegrationTests.java"
+        run: mvn test
