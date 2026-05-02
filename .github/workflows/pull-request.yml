@@ -100,4 +100,3 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/mr:latest

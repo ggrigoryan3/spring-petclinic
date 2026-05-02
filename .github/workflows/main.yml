@@ -19,4 +19,4 @@ jobs:
           docker buildx imagetools create \
             --tag ${{ secrets.DOCKER_USERNAME }}/main:latest \
             --tag ${{ secrets.DOCKER_USERNAME }}/main:${{ github.sha }} \
-            ${{ secrets.DOCKER_USERNAME }}/mr:latest
+            ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }}
