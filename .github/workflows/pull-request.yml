@@ -7,7 +7,6 @@ jobs:
   checkstyle:
     name: Checkstyle
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get Code
@@ -17,11 +16,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ hashFiles('**/pom.xml') }}
+          key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
       - name: Checkstyle
-        run: mvn -B checkstyle:checkstyle
+        run: mvn -B -ntp checkstyle:checkstyle
 
       - name: Upload Report
         uses: actions/upload-artifact@v4
@@ -46,17 +45,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ hashFiles('**/pom.xml') }}
+          key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
       - name: Run tests
-        run: mvn test
+        run: mvn -B -ntp test
 
   build:
     name: Build Code
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
-
+    
     steps:
       - name: Get Code
         uses: actions/checkout@v4
@@ -65,11 +63,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ hashFiles('**/pom.xml') }}
+          key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
       - name: Build
-        run: mvn clean package -DskipTests
+        run: mvn -B -ntp clean package -DskipTests
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
