@@ -32,12 +32,26 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
 
-    env:
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # env:
+    #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+    #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+    #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    #   POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     steps:
       - name: Get Code
         uses: actions/checkout@v4
