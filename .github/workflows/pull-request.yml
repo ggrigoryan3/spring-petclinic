@@ -7,7 +7,6 @@ jobs:
   checkstyle:
     name: Checkstyle
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get Code
@@ -21,7 +20,7 @@ jobs:
           restore-keys: maven-
 
       - name: Checkstyle
-        run: mvn -B checkstyle:checkstyle
+        run: mvn -B -ntp checkstyle:checkstyle
 
       - name: Upload Report
         uses: actions/upload-artifact@v4
@@ -32,26 +31,12 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
-    services:
-      postgres:
-        image: postgres:18
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    # env:
-    #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-    #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-    #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    #   POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+    env:
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     steps:
       - name: Get Code
         uses: actions/checkout@v4
@@ -64,13 +49,12 @@ jobs:
           restore-keys: maven-
 
       - name: Run tests
-        run: mvn test
+        run: mvn -B -ntp test
 
   build:
     name: Build Code
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
-
+    
     steps:
       - name: Get Code
         uses: actions/checkout@v4
@@ -83,7 +67,7 @@ jobs:
           restore-keys: maven-
 
       - name: Build
-        run: mvn clean package -DskipTests
+        run: mvn -B -ntp clean package -DskipTests
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
