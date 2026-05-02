@@ -49,6 +49,7 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    needs: [build]
 
     env:
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
