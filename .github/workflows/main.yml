@@ -9,6 +9,10 @@ jobs:
     name: Promote To Main
     runs-on: ubuntu-latest
     steps:
+      - name: Get Code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -17,8 +21,6 @@ jobs:
           
       - name: Promote Image
         run: |
-          # Use the commit SHA from the PR that was just merged
-          # We look at the parent of the merge commit
           SOURCE_SHA=$(git rev-parse HEAD^2) 
 
           docker buildx imagetools create \
