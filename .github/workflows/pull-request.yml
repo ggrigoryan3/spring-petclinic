@@ -38,6 +38,7 @@ jobs:
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     steps:
       - name: Get Code
         uses: actions/checkout@v4
