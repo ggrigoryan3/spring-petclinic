@@ -15,6 +15,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+      - name: Get Code
+        uses: actions/checkout@v4
+        
       - name: Get Source SHA
         id: vars
         run: |
