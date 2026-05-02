@@ -1,8 +1,5 @@
-name: Pipeline
+name: PR Pipeline
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -10,10 +7,18 @@ jobs:
   checkstyle:
     name: Checkstyle
     runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get Code
         uses: actions/checkout@v4
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
 
       - name: Checkstyle
         run: mvn -B checkstyle:checkstyle
@@ -27,6 +32,7 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
 
     env:
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -36,16 +42,31 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
+
       - name: Run tests
         run: mvn test
 
   build:
     name: Build Code
     runs-on: ubuntu-latest
+    container: maven:3.8.5-openjdk-17
 
     steps:
       - name: Get Code
         uses: actions/checkout@v4
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
 
       - name: Build
         run: mvn clean package -DskipTests
@@ -74,22 +95,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Determine Repo Name
-        id: repo
-        env:
-          TITLE: ${{ github.event_name }}
-        run: |
-          if [[ $TITLE == "pull_request" ]]; then
-            echo "repo=mr" >> $GITHUB_OUTPUT
-          else
-            echo "repo=main" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ steps.repo.outputs.repo }}:${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ steps.repo.outputs.repo }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/mr:latest
