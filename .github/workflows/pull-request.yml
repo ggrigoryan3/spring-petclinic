@@ -32,7 +32,6 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    container: maven:3.8.5-openjdk-17
 
     env:
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
