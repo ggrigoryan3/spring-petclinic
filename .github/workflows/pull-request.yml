@@ -12,13 +12,6 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-
       - name: Checkstyle
         run: mvn -B -ntp checkstyle:checkstyle
 
@@ -41,12 +34,12 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
-      - name: Cache
-        uses: actions/cache@v4
+      - name: JDK and Cache
+        uses: actions/setup-java@v4
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
 
       - name: Run tests
         run: mvn -B -ntp test
@@ -59,12 +52,12 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
-      - name: Cache
-        uses: actions/cache@v4
+      - name: JDK and Cache
+        uses: actions/setup-java@v4
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
 
       - name: Build
         run: mvn -B -ntp clean package -DskipTests
