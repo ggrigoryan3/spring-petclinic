@@ -16,13 +16,10 @@ jobs:
 
       - name: Promote Image
         run: |
-          # Pull the exact image built during the PR
-          docker pull ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/mr:latest
           
-          # Re-tag for Main repository
-          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/main:${{ github.sha }}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/main:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:latest ${{ secrets.DOCKER_USERNAME }}/main:${{ github.sha }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:latest ${{ secrets.DOCKER_USERNAME }}/main:latest
           
-          # Push to Main
           docker push ${{ secrets.DOCKER_USERNAME }}/main:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/main:latest
