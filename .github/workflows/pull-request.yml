@@ -100,3 +100,11 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/mr:${{ github.sha }}
+          
+      - name: Save SHA
+        run: echo ${{ github.sha }} > sha.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-sha
+          path: sha.txt
