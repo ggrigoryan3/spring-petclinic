@@ -69,7 +69,7 @@ jobs:
       #       ${{ runner.os }}-maven-
 
       - name: Run Tests
-        run: mvn -B -ntp test
+        run: mvn -B test
 
   docker-push:
     name: Push To DockerHub
