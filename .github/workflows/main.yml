@@ -18,7 +18,7 @@ jobs:
       - name: Get commit SHA
         id: sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-
+ 
       - name: Promote image to main
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/mr:${{ steps.sha.outputs.sha }}
