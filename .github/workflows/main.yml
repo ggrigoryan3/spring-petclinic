@@ -21,13 +21,7 @@ jobs:
  
       - name: Promote image to main
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/mr:${{ steps.sha.outputs.sha }}
-
-          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:${{ steps.sha.outputs.sha }} \
-                      ${{ secrets.DOCKER_USERNAME }}/main:${{ steps.sha.outputs.sha }}
-
-          docker tag ${{ secrets.DOCKER_USERNAME }}/mr:${{ steps.sha.outputs.sha }} \
-                      ${{ secrets.DOCKER_USERNAME }}/main:latest
-
-          docker push ${{ secrets.DOCKER_USERNAME }}/main:${{ steps.sha.outputs.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/main:latest
+          docker buildx imagetools create \
+            --tag ${{ secrets.DOCKER_USERNAME }}/main:latest \
+            --tag ${{ secrets.DOCKER_USERNAME }}/main:${{ github.sha }} \
+            ${{ secrets.DOCKER_USERNAME }}/mr:latest  
