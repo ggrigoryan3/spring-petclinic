@@ -29,13 +29,12 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v5
+      - name: Set up Java
+        uses: actions/setup-java@v5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          distribution: temurin
+          java-version: '17'
+          cache: maven
 
       - name: Build
         run: mvn -B clean package -DskipTests
@@ -60,13 +59,12 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v5
+      - name: Set up Java
+        uses: actions/setup-java@v5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          distribution: temurin
+          java-version: '17'
+          cache: maven
 
       - name: Run Tests
         run: mvn -B test
