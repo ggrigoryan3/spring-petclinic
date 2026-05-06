@@ -76,7 +76,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Install Docker CLI
-        run: apt-get update -qq && apt-get install -y -qq docker.io docker-compose-plugin
+        run: apt-get update -qq && apt-get install -y -qq docker.io
+
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v2
 
       - name: Run Tests
         run: mvn -B test
