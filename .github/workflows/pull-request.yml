@@ -75,10 +75,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Install Docker Compose
+      - name: Install Docker CLI
         run: |
-          curl -SL https://github.com/docker/compose/releases/download/v2.35.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
+          apt-get update -qq && apt-get install -y -qq docker.io
 
       - name: Run Tests
         run: mvn -B test
