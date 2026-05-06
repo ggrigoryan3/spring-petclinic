@@ -75,8 +75,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up Docker
-        uses: docker/setup-docker-action@v4
+      - name: Install Docker CLI
+        run: apt-get update -qq && apt-get install -y -qq docker.io
 
       - name: Run Tests
         run: mvn -B test
