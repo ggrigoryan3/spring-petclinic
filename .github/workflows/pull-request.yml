@@ -76,7 +76,12 @@ jobs:
           cache: maven
 
       - name: Run Tests
-        run: mvn -B test
+        run: |
+          mvn -B test \
+            -Dspring.profiles.active=mysql \
+            -Dspring.datasource.url="${MYSQL_URL}" \
+            -Dspring.datasource.username="${MYSQL_USER}" \
+            -Dspring.datasource.password="${MYSQL_PASSWORD}"
 
   container-scan-and-push:
     name: Container Scan & Push to ECR
