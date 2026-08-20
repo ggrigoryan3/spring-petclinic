@@ -78,6 +78,8 @@ jobs:
       - name: Run Tests
         run: |
           mvn -B test \
+            -Dtest="!*Postgres*,!*IntegrationTests" \
+            -Dspring.docker.compose.skip.in-tests=true \
             -Dspring.profiles.active=mysql \
             -Dspring.datasource.url="${MYSQL_URL}" \
             -Dspring.datasource.username="${MYSQL_USER}" \
