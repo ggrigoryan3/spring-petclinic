@@ -4,6 +4,7 @@ services:
       context: .
     ports:
       - 8080:8080
+      - 9404:9404
     restart: always
     depends_on:
       db:
@@ -32,5 +33,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - server
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
 volumes:
   db-data:
