@@ -20,4 +20,4 @@ COPY --from=builder /build/target/spring-petclinic-*.jar app.jar
 
 EXPOSE 8080 9404
 
-ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9404:/app/config.yml", "-Dspring.profiles.active=postgres", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9404:/app/config.yml", "-Dspring.profiles.active=mysql", "-jar", "app.jar"]
