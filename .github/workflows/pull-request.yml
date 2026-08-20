@@ -81,13 +81,7 @@ jobs:
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
-          mvn -B test \
-            -Dtest="!*Postgres*,!*IntegrationTests" \
-            -Dspring.docker.compose.skip.in-tests=true \
-            -Dspring.profiles.active=mysql \
-            -Dspring.datasource.url="${MYSQL_URL}" \
-            -Dspring.datasource.username="${MYSQL_USER}" \
-            -Dspring.datasource.password="${MYSQL_PASSWORD}"
+          mvn -B test 
 
   container-scan-and-push:
     name: Container Scan & Push to ECR
