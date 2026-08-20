@@ -3,7 +3,7 @@ services:
     build:
       context: .
     ports:
-      - 8080:8080
+      - 8180:8080
       - 9404:9404
     restart: always
     depends_on:
