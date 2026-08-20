@@ -76,6 +76,10 @@ jobs:
           cache: maven
 
       - name: Run Tests
+        env:
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
           mvn -B test \
             -Dtest="!*Postgres*,!*IntegrationTests" \
