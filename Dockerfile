@@ -3,7 +3,6 @@ FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 
 COPY pom.xml .
-
 COPY src ./src
 
 RUN mvn clean package -DskipTests
@@ -20,4 +19,4 @@ COPY --from=builder /build/target/spring-petclinic-*.jar app.jar
 
 EXPOSE 8080 9404
 
-ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9404:/app/config.yml", "-Dspring.profiles.active=mysql", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9404:/app/config.yml", "-Dspring.profiles.active=postgres", "-jar", "app.jar"]

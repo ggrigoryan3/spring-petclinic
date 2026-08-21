@@ -22,22 +22,22 @@ spec:
         - name: JAVA_TOOL_OPTIONS
           value: "-Xms256m -Xmx512m"
         - name: SPRING_PROFILES_ACTIVE
-          value: mysql
+          value: postgres
         - name: SPRING_DATASOURCE_URL
           valueFrom:
             secretKeyRef:
               name: petclinic-db-secret
-              key: mysql_url
+              key: postgres_url
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
               name: petclinic-db-secret
-              key: mysql_user
+              key: postgres_user
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: petclinic-db-secret
-              key: mysql_password
+              key: postgres_password
         - name: SPRING_APPLICATION_JSON
           value: |
             {

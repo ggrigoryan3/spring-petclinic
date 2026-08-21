@@ -41,18 +41,6 @@ jobs:
       - name: Update Kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Create or Update DB Secret
-        env:
-          MYSQL_URL: ${{ secrets.MYSQL_URL }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        run: |
-          kubectl create secret generic petclinic-db-secret \
-            --from-literal=mysql_url="${MYSQL_URL}" \
-            --from-literal=mysql_user="${MYSQL_USER}" \
-            --from-literal=mysql_password="${MYSQL_PASSWORD}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Hydrate and Apply Manifests
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
