@@ -1,0 +1,65 @@
+name: Deploy to EKS
+
+on:
+  workflow_run:
+    workflows: ["Main Branch Release Pipeline"]
+    types:
+      - completed
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: spring-petclinic
+  EKS_CLUSTER_NAME: capstone-prod-cluster
+
+jobs:
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get Latest Tag from Git
+        id: tag
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Create or Update DB Secret
+        env:
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        run: |
+          kubectl create secret generic petclinic-db-secret \
+            --from-literal=mysql_url="${MYSQL_URL}" \
+            --from-literal=mysql_user="${MYSQL_USER}" \
+            --from-literal=mysql_password="${MYSQL_PASSWORD}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Hydrate and Apply Manifests
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ steps.tag.outputs.latest_tag }}
+        run: |
+          export ECR_IMAGE_TAG="${ECR_REGISTRY}/${ECR_REPOSITORY}:${TAG}"
+          envsubst '${ECR_IMAGE_TAG}' < k8s/deployment.yaml | kubectl apply -f -
+
+      - name: Verify Deployment Rollout
+        run: kubectl rollout status deployment/petclinic-app --timeout=180s
