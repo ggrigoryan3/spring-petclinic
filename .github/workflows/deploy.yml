@@ -38,7 +38,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-metadata
-          run-id: ${{ github.event.workflow_run.id }} # Pulls artifact from the specific release run
+          run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Tag and SHA
