@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: petclinic-app
-  namespace: default
+  name: {{ .Release.Name }}-app
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: petclinic-app
+      app: {{ .Release.Name }}-app
   template:
     metadata:
       labels:
-        app: petclinic-app
+        app: {{ .Release.Name }}-app
     spec:
       containers:
       - name: petclinic
-        image: ${ECR_IMAGE_TAG}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 8080
         env:
@@ -38,17 +39,8 @@ spec:
             secretKeyRef:
               name: petclinic-db-secret
               key: postgres_password
-        - name: SPRING_APPLICATION_JSON
-          value: |
-            {
-              "management.endpoint.health.probes.add-additional-paths": true
-            }
         resources:
-          requests:
-            memory: "384Mi"
-            cpu: "250m"
-          limits:
-            memory: "768Mi"
+          {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
           httpGet:
             path: /livez
@@ -61,17 +53,3 @@ spec:
             port: 8080
           initialDelaySeconds: 60
           periodSeconds: 15
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: petclinic-service
-  namespace: default
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-  selector:
-    app: petclinic-app
