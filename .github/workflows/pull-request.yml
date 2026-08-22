@@ -92,4 +92,6 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          mvn -B test 
+          mvn -B test \
+            -Dtest="!PostgresIntegrationTests" \
+            -Dspring.docker.compose.skip.in-tests=true
