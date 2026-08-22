@@ -87,10 +87,6 @@ jobs:
           cache: maven
 
       - name: Run Tests
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           mvn -B test \
             -Dtest="!PostgresIntegrationTests" \
