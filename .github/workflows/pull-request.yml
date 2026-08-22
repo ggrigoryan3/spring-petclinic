@@ -37,6 +37,9 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v4
 
+      - name: Resolve Maven Dependencies Locally
+        run: mvn -B dependency:resolve
+
       - name: Run Trivy File System Scan
         uses: aquasecurity/trivy-action@master
         with:
