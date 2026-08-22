@@ -49,13 +49,17 @@ jobs:
           echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
           echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
-      - name: Hydrate and Apply Manifests
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Deploy via Helm
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG: ${{ steps.tag.outputs.latest_tag }}
         run: |
-          export ECR_IMAGE_TAG="${ECR_REGISTRY}/${ECR_REPOSITORY}:${TAG}"
-          envsubst '${ECR_IMAGE_TAG}' < k8s/deployment.yaml | kubectl apply -f -
-
-      - name: Verify Deployment Rollout
-        run: kubectl rollout status deployment/petclinic-app --timeout=180s
+          helm upgrade --install petclinic ./helm/petclinic \
+            --namespace default \
+            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
+            --set image.tag="${TAG}" \
+            --wait \
+            --timeout 3m
