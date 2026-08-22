@@ -24,6 +24,11 @@ spec:
           value: "-Xms256m -Xmx512m"
         - name: SPRING_PROFILES_ACTIVE
           value: postgres
+        - name: SPRING_APPLICATION_JSON
+          value: |
+            {
+              "management.endpoint.health.probes.add-additional-paths": true
+            }
         - name: SPRING_DATASOURCE_URL
           valueFrom:
             secretKeyRef:
