@@ -31,15 +31,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Get Latest Tag from Git
-        id: tag
-        run: |
-          git fetch --tags
-          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
-          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-
       - name: Update Kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Download Release Metadata Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-metadata
+          run-id: ${{ github.event.workflow_run.id }} # Pulls artifact from the specific release run
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Tag and SHA
+        id: tag
+        run: |
+          VERSION=$(head -n 1 release_version.txt)
+          COMMIT_SHA=$(tail -n 1 release_version.txt)
+          echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
       - name: Hydrate and Apply Manifests
         env:
