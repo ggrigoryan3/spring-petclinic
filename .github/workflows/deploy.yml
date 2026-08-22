@@ -62,4 +62,4 @@ jobs:
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
             --wait \
-            --timeout 3m
+            --timeout 10m
