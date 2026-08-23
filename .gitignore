@@ -48,3 +48,4 @@ _site/
 !petclinic.css
 
 .env
+app.log

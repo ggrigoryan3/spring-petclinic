@@ -1,0 +1,65 @@
+name: Deploy to EKS
+
+on:
+  workflow_run:
+    workflows: ["Main Branch Release Pipeline"]
+    types:
+      - completed
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: spring-petclinic
+  EKS_CLUSTER_NAME: capstone-prod-cluster
+
+jobs:
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Download Release Metadata Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Tag and SHA
+        id: tag
+        run: |
+          VERSION=$(head -n 1 release_version.txt)
+          COMMIT_SHA=$(tail -n 1 release_version.txt)
+          echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Deploy via Helm
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ steps.tag.outputs.latest_tag }}
+        run: |
+          helm upgrade --install petclinic ./helm/petclinic \
+            --namespace default \
+            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
+            --set image.tag="${TAG}" \
+            --wait \
+            --timeout 5m
