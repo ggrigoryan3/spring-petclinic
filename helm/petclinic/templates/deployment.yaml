@@ -21,7 +21,7 @@ spec:
         - containerPort: 8080
         env:
         - name: JAVA_TOOL_OPTIONS
-          value: "-Xms256m -Xmx512m"
+          value: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0"
         - name: SPRING_PROFILES_ACTIVE
           value: postgres
         - name: SPRING_APPLICATION_JSON
