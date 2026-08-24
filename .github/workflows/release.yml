@@ -117,8 +117,7 @@ jobs:
 
       - name: Save Version Artifact for Deployment
         run: |
-          echo "${{ steps.semver.outputs.new_version }}" > release_version.txt
-          echo "${{ github.sha }}" >> release_version.txt
+            echo "${{ steps.semver.outputs.new_version }}" > release_version.txt
         
       - name: Upload Release Metadata
         uses: actions/upload-artifact@v4
