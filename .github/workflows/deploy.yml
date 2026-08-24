@@ -41,13 +41,11 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Tag and SHA
+      - name: Extract Tag
         id: tag
         run: |
-          VERSION=$(head -n 1 release_version.txt)
-          COMMIT_SHA=$(tail -n 1 release_version.txt)
-          echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
-          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+            VERSION=$(cat release_version.txt)
+            echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install Helm
         uses: azure/setup-helm@v4
