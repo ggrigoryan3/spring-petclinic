@@ -54,7 +54,7 @@ jobs:
       - name: Build Local Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          VERSION: ${{ steps.semver.outputs.new_version }}
+          VERSION: ${{ steps.semver.outputs.new_tag }}
           SHA: ${{ github.sha }}
         run: |
           docker build \
@@ -75,7 +75,7 @@ jobs:
       - name: Push Image Tags to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          VERSION: ${{ steps.semver.outputs.new_version }}
+          VERSION: ${{ steps.semver.outputs.new_tag }}
           SHA: ${{ github.sha }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SHA
@@ -84,7 +84,7 @@ jobs:
 
       - name: Save Version Artifact for Deployment
         run: |
-          echo "${{ steps.semver.outputs.new_version }}" > release_version.txt
+          echo "${{ steps.semver.outputs.new_tag }}" > release_version.txt
         
       - name: Upload Release Metadata
         uses: actions/upload-artifact@v4
