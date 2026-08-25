@@ -56,8 +56,10 @@ jobs:
           TAG: ${{ steps.tag.outputs.latest_tag }}
         run: |
           helm upgrade --install petclinic ./helm/petclinic \
-            --namespace default \
+            --namespace petclinic \
+            --create-namespace \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
-            --wait \
-            --timeout 5m
+            --set appVersion="${TAG}" \
+            --atomic \
+            --timeout 10m
