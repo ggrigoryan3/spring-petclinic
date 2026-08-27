@@ -50,16 +50,17 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4
 
-      - name: Deploy via Helm
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG: ${{ steps.tag.outputs.latest_tag }}
-        run: |
-          helm upgrade --install petclinic ./helm/petclinic \
-            --namespace petclinic \
-            --create-namespace \
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
-            --set image.tag="${TAG}" \
-            --app-version "${TAG}" \
-            --rollback-on-failure \
-            --timeout 10m
+      - name: Deploy via Helm Action
+        uses: deliverybot/helm-deploy@v1
+        with:
+          release: 'petclinic'
+          namespace: 'petclinic'
+          chart: './helm/petclinic'
+          atomic: true
+          timeout: '10m'
+          value-files: './helm/petclinic/values.yaml'
+          values: |
+            image:
+              repository: "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}"
+              tag: "${{ steps.tag.outputs.latest_tag }}"
+            appVersion: "${{ steps.tag.outputs.latest_tag }}"
