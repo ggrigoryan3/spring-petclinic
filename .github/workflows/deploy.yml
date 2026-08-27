@@ -61,5 +61,6 @@ jobs:
             --namespace default \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
-            --wait \
-            --timeout 5m
+            --app-version "${TAG}" \
+            --rollback-on-failure \
+            --timeout 10m
