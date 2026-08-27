@@ -15,6 +15,7 @@ jobs:
   deploy:
     name: Deploy to EKS
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout Code
@@ -38,6 +39,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-metadata
+          path: .
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -52,15 +54,16 @@ jobs:
         uses: azure/setup-helm@v4
 
       - name: Deploy via Helm
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG: ${{ steps.tag.outputs.latest_tag }}
-        run: |
-          helm upgrade --install petclinic ./helm/petclinic \
-            --namespace petclinic \
-            --create-namespace \
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
-            --set image.tag="${TAG}" \
-            --set appVersion="${TAG}" \
-            --rollback-on-failure \
-            --timeout 10m
+        uses: deler-aziz/helm-deploy-action@v1.0.0
+        with:
+          release: 'petclinic'
+          chart: './helm/petclinic'
+          namespace: 'petclinic'
+          namespace-create: true
+          atomic: true
+          timeout: '10m'
+          version: '${{ steps.tag.outputs.latest_tag }}'
+          values: |
+            image:
+              repository: "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}"
+              tag: "${{ steps.tag.outputs.latest_tag }}"
