@@ -41,13 +41,11 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Tag and SHA
+      - name: Extract Tag
         id: tag
         run: |
-          VERSION=$(head -n 1 release_version.txt)
-          COMMIT_SHA=$(tail -n 1 release_version.txt)
-          echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
-          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+            VERSION=$(cat release_version.txt)
+            echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -58,7 +56,8 @@ jobs:
           TAG: ${{ steps.tag.outputs.latest_tag }}
         run: |
           helm upgrade --install petclinic ./helm/petclinic \
-            --namespace default \
+            --namespace petclinic \
+            --create-namespace \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
             --app-version "${TAG}" \

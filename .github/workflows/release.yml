@@ -22,46 +22,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install Python SemVer Dependencies
-        run: python -m pip install semver GitPython
-
-      - name: Calculate & Create Next SemVer Tag
+      - name: Bump Version and Push Tag
         id: semver
-        run: |
-          cat << 'EOF' > generate_version.py
-          import os, git, semver
-
-          try:
-              repo = git.Repo('.')
-              tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-              latest_tag = str(tags[-1].name) if tags else "v1.0.0"
-              
-              if latest_tag.startswith('v'):
-                  ver = semver.Version.parse(latest_tag[1:])
-                  new_ver = f"v{ver.bump_minor()}"
-              else:
-                  ver = semver.Version.parse(latest_tag)
-                  new_ver = str(ver.bump_minor())
-          except Exception:
-              new_ver = "v1.0.0"
-
-          print(f"Generated Release Version: {new_ver}")
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-              fh.write(f"new_version={new_ver}\n")
-          EOF
-          python generate_version.py
-
-      - name: Push Git Tag to Repository
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ steps.semver.outputs.new_version }}
-          git push origin ${{ steps.semver.outputs.new_version }}
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: minor
+          release_branches: main
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -87,7 +54,7 @@ jobs:
       - name: Build Local Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          VERSION: ${{ steps.semver.outputs.new_version }}
+          VERSION: ${{ steps.semver.outputs.new_tag }}
           SHA: ${{ github.sha }}
         run: |
           docker build \
@@ -108,7 +75,7 @@ jobs:
       - name: Push Image Tags to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          VERSION: ${{ steps.semver.outputs.new_version }}
+          VERSION: ${{ steps.semver.outputs.new_tag }}
           SHA: ${{ github.sha }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SHA
@@ -117,8 +84,7 @@ jobs:
 
       - name: Save Version Artifact for Deployment
         run: |
-          echo "${{ steps.semver.outputs.new_version }}" > release_version.txt
-          echo "${{ github.sha }}" >> release_version.txt
+          echo "${{ steps.semver.outputs.new_tag }}" > release_version.txt
         
       - name: Upload Release Metadata
         uses: actions/upload-artifact@v4

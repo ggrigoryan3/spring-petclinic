@@ -65,12 +65,6 @@ jobs:
       - name: Build
         run: mvn -B clean package -DskipTests
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: petclinic-jar
-          path: target/*.jar
-
   test:
     name: Tests
     runs-on: ubuntu-latest

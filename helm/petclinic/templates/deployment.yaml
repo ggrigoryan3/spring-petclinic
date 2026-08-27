@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-app
   namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -21,7 +25,7 @@ spec:
         - containerPort: 8080
         env:
         - name: JAVA_TOOL_OPTIONS
-          value: "-Xms256m -Xmx512m"
+          value: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0"
         - name: SPRING_PROFILES_ACTIVE
           value: postgres
         - name: SPRING_APPLICATION_JSON
