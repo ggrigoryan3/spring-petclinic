@@ -29,6 +29,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: minor
           release_branches: main
+          tag_prefix: ""
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
