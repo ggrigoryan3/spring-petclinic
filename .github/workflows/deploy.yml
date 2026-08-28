@@ -46,9 +46,8 @@ jobs:
       - name: Extract Tag
         id: tag
         run: |
-          RAW_VERSION=$(cat release_version.txt)
-          CLEAN_VERSION=${RAW_VERSION#v} 
-          echo "latest_tag=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(cat release_version.txt)
+          echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -65,4 +64,4 @@ jobs:
             --set image.tag="${TAG}" \
             --set appVersion="${TAG}" \
             --rollback-on-failure \
-            --timeout 15m
+            --timeout 10m
