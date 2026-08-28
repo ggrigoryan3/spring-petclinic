@@ -65,4 +65,4 @@ jobs:
             --set image.tag="${TAG}" \
             --set appVersion="${TAG}" \
             --rollback-on-failure \
-            --timeout 10m
+            --timeout 15m
