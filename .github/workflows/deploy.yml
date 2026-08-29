@@ -56,8 +56,10 @@ jobs:
         run: |
           sed -i 's/^appVersion:.*/appVersion: "${{ steps.tag.outputs.latest_tag }}"/' ./helm/petclinic/Chart.yaml
           BASE_VERSION=$(grep '^version:' ./helm/petclinic/Chart.yaml | awk '{print $2}' | tr -d '"')
+          MAJOR_VERSION=$(echo "$BASE_VERSION" | cut -d. -f1)
           HELM_REVISION_COUNT=$(git rev-list --count HEAD -- ./helm/petclinic)
-          DYNAMIC_CHART_VERSION="${BASE_VERSION}.${HELM_REVISION_COUNT}"
+          DYNAMIC_CHART_VERSION="${MAJOR_VERSION}.${HELM_REVISION_COUNT}.0"
+          sed -i "s/^version:.*/version: \"${DYNAMIC_CHART_VERSION}\"/" ./helm/petclinic/Chart.yaml
           echo "Calculated chart_version=${DYNAMIC_CHART_VERSION}"
           echo "chart_version=${DYNAMIC_CHART_VERSION}" >> $GITHUB_OUTPUT
 
