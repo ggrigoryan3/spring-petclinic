@@ -26,6 +26,8 @@ spec:
         env:
         - name: JAVA_TOOL_OPTIONS
           value: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0"
+        - name: MANAGEMENT_ENDPOINT_HEALTH_GROUP_READINESS_INCLUDE
+          value: "*"
         - name: SPRING_PROFILES_ACTIVE
           value: postgres
         - name: SPRING_APPLICATION_JSON
