@@ -72,8 +72,8 @@ jobs:
             --namespace petclinic \
             --create-namespace \
             --version "${CHART_VERSION}" \
-            --app-version "${TAG}" \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
+            --set appVersion="${TAG}" \
             --wait \
             --timeout 10m
