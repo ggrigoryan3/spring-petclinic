@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to check commit history for chart changes
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -49,6 +51,14 @@ jobs:
           VERSION=$(cat release_version.txt)
           echo "latest_tag=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Calculate Chart Version
+        id: chart-version
+        run: |
+          BASE_VERSION=$(grep '^version:' ./helm/petclinic/Chart.yaml | awk '{print $2}')
+          HELM_REVISION_COUNT=$(git rev-list --count HEAD -- ./helm/petclinic)
+          DYNAMIC_CHART_VERSION="${BASE_VERSION}.${HELM_REVISION_COUNT}"
+          echo "chart_version=${DYNAMIC_CHART_VERSION}" >> $GITHUB_OUTPUT
+
       - name: Install Helm
         uses: azure/setup-helm@v4
 
@@ -56,12 +66,14 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG: ${{ steps.tag.outputs.latest_tag }}
+          CHART_VERSION: ${{ steps.chart-version.outputs.chart_version }}
         run: |
           helm upgrade --install petclinic ./helm/petclinic \
             --namespace petclinic \
             --create-namespace \
+            --version "${CHART_VERSION}" \
+            --app-version "${TAG}" \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set image.tag="${TAG}" \
-            --set appVersion="${TAG}" \
             --wait \
             --timeout 10m
