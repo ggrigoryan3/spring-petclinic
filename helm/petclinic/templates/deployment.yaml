@@ -19,7 +19,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
-        prometheus.io/port: "9080"
+        prometheus.io/port: "9404"
     spec:
       containers:
       - name: petclinic
