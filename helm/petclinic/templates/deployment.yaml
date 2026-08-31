@@ -7,10 +7,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/actuator/prometheus"
-    prometheus.io/port: "8080"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -20,6 +16,10 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
     spec:
       containers:
       - name: petclinic
