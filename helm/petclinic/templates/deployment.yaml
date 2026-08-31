@@ -27,6 +27,9 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 8080
+          name: http
+        - containerPort: 9404
+          name: jmx-metrics
         env:
         - name: JAVA_TOOL_OPTIONS
           value: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0"
