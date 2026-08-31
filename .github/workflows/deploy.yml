@@ -87,3 +87,5 @@ jobs:
         with:
           commit_message: "chore(helm): bump chart version to ${{ steps.chart-version.outputs.chart_version }} and appVersion to ${{ steps.tag.outputs.latest_tag }} [skip ci]"
           file_pattern: 'helm/petclinic/Chart.yaml'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
