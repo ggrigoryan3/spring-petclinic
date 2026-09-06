@@ -61,6 +61,10 @@ spec:
               key: postgres_password
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /livez
@@ -73,3 +77,10 @@ spec:
             port: 8080
           initialDelaySeconds: 60
           periodSeconds: 15
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "petclinic-db-secret-provider"
