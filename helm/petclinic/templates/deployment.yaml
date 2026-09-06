@@ -23,6 +23,7 @@ spec:
         prometheus.io/path: "/metrics"
         prometheus.io/port: "9404"
     spec:
+      serviceAccountName: petclinic-sa
       containers:
       - name: petclinic
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
