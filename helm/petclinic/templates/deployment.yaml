@@ -7,6 +7,8 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -21,6 +23,7 @@ spec:
         prometheus.io/path: "/metrics"
         prometheus.io/port: "9404"
     spec:
+      serviceAccountName: petclinic-sa
       containers:
       - name: petclinic
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -59,6 +62,10 @@ spec:
               key: postgres_password
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /livez
@@ -71,3 +78,10 @@ spec:
             port: 8080
           initialDelaySeconds: 60
           periodSeconds: 15
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "petclinic-db-secret-provider"
