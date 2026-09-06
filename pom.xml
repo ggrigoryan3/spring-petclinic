@@ -45,7 +45,7 @@
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.47</spring-format.version>
 
-    <tomcat.version>11.0.25</tomcat.version>
+    <tomcat.version>11.0.22</tomcat.version>
     <postgresql.version>42.7.12</postgresql.version>
     <jackson-bom.version>3.1.4</jackson-bom.version>
     <micrometer.version>1.16.6</micrometer.version>
@@ -78,13 +78,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-
-    <!-- Explicit Tomcat override to resolve Trivy CVEs (CVE-2026-65182, CVE-2026-65905, CVE-2026-68525) -->
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>${tomcat.version}</version>
     </dependency>
 
     <dependency>
