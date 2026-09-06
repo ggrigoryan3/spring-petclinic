@@ -16,10 +16,6 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-app
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "9404"
     spec:
       containers:
       - name: petclinic
@@ -28,8 +24,6 @@ spec:
         ports:
         - containerPort: 8080
           name: http
-        - containerPort: 9404
-          name: jmx-metrics
         env:
         - name: JAVA_TOOL_OPTIONS
           value: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0"
