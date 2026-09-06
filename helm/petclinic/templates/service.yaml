@@ -12,11 +12,5 @@ spec:
     port: {{ .Values.service.port }}
     targetPort: {{ .Values.service.targetPort }}
     protocol: TCP
-  {{- if .Values.service.metricsPort }}
-  - name: jmx-metrics
-    port: {{ .Values.service.metricsPort }}
-    targetPort: {{ .Values.service.metricsPort }}
-    protocol: TCP
-  {{- end }}
   selector:
     app: {{ .Release.Name }}-app
