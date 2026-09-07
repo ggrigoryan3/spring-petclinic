@@ -9530,3 +9530,7 @@ strong {
     margin-bottom: 30px; } }
 
 /*# sourceMappingURL=../../../../../../target/petclinic.css.map */
+/* CI/CD Demo - Custom Background */
+body {
+  background-color: red !important;
+}
