@@ -3,4 +3,4 @@ name: petclinic
 description: Helm chart for Spring PetClinic Application
 type: application
 version: "0.37.0"
-appVersion: "4.62.0"
+appVersion: "4.63.0"
