@@ -1,6 +1,6 @@
 apiVersion: v2
 name: petclinic
-description: Helm Chart for Spring PetClinic Application
+description: Helm chart for Spring PetClinic Application
 type: application
 version: "0.49.0"
 appVersion: "4.61.0"

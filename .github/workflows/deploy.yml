@@ -58,11 +58,21 @@ jobs:
           sed -i 's/^appVersion:.*/appVersion: "${{ steps.tag.outputs.latest_tag }}"/' ./helm/petclinic/Chart.yaml
           BASE_VERSION=$(grep '^version:' ./helm/petclinic/Chart.yaml | awk '{print $2}' | tr -d '"')
           MAJOR_VERSION=$(echo "$BASE_VERSION" | cut -d. -f1)
-          HELM_REVISION_COUNT=$(git log --oneline --grep="^chore\(helm\):" --invert-grep -- ./helm/petclinic | wc -l | tr -d ' ')
+          # Added -E flag for robust extended regex matching
+          HELM_REVISION_COUNT=$(git log --oneline -E --grep="^chore\(helm\):" --invert-grep -- ./helm/petclinic | wc -l | tr -d ' ')
           DYNAMIC_CHART_VERSION="${MAJOR_VERSION}.${HELM_REVISION_COUNT}.0"          
           sed -i "s/^version:.*/version: \"${DYNAMIC_CHART_VERSION}\"/" ./helm/petclinic/Chart.yaml
           echo "Calculated chart_version=${DYNAMIC_CHART_VERSION}"
           echo "chart_version=${DYNAMIC_CHART_VERSION}" >> $GITHUB_OUTPUT
+
+      # Moved Commit & Push BEFORE Helm Deployment so Git state and Helm deployment match
+      - name: Commit and Push Chart.yaml Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(helm): bump chart version to ${{ steps.chart-version.outputs.chart_version }} and appVersion to ${{ steps.tag.outputs.latest_tag }} [skip ci]"
+          file_pattern: 'helm/petclinic/Chart.yaml'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -81,11 +91,3 @@ jobs:
             --set image.tag="${TAG}" \
             --wait \
             --timeout 10m
-
-      - name: Commit and Push Chart.yaml Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(helm): bump chart version to ${{ steps.chart-version.outputs.chart_version }} and appVersion to ${{ steps.tag.outputs.latest_tag }} [skip ci]"
-          file_pattern: 'helm/petclinic/Chart.yaml'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
