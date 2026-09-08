@@ -6,9 +6,6 @@ on:
     types:
       - completed
 
-permissions:
-  contents: write
-
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: spring-petclinic
@@ -26,14 +23,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Sync latest git branch changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git checkout main
-          git pull origin main
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -69,22 +58,11 @@ jobs:
           sed -i 's/^appVersion:.*/appVersion: "${{ steps.tag.outputs.latest_tag }}"/' ./helm/petclinic/Chart.yaml
           BASE_VERSION=$(grep '^version:' ./helm/petclinic/Chart.yaml | awk '{print $2}' | tr -d '"')
           MAJOR_VERSION=$(echo "$BASE_VERSION" | cut -d. -f1)
-          
-          # Exact matching with -E
-          HELM_REVISION_COUNT=$(git log --oneline -E --grep="^chore\(helm\):" --invert-grep -- ./helm/petclinic | wc -l | tr -d ' ')
+          HELM_REVISION_COUNT=$(git log --oneline --grep="^chore(helm):" --invert-grep -- ./helm/petclinic | wc -l | tr -d ' ')
           DYNAMIC_CHART_VERSION="${MAJOR_VERSION}.${HELM_REVISION_COUNT}.0"          
-          
           sed -i "s/^version:.*/version: \"${DYNAMIC_CHART_VERSION}\"/" ./helm/petclinic/Chart.yaml
           echo "Calculated chart_version=${DYNAMIC_CHART_VERSION}"
           echo "chart_version=${DYNAMIC_CHART_VERSION}" >> $GITHUB_OUTPUT
-
-      - name: Commit and Push Chart.yaml Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(helm): bump chart version to ${{ steps.chart-version.outputs.chart_version }} and appVersion to ${{ steps.tag.outputs.latest_tag }} [skip ci]"
-          file_pattern: 'helm/petclinic/Chart.yaml'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -103,3 +81,11 @@ jobs:
             --set image.tag="${TAG}" \
             --wait \
             --timeout 10m
+
+      - name: Commit and Push Chart.yaml Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(helm): bump chart version to ${{ steps.chart-version.outputs.chart_version }} and appVersion to ${{ steps.tag.outputs.latest_tag }} [skip ci]"
+          file_pattern: 'helm/petclinic/Chart.yaml'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
